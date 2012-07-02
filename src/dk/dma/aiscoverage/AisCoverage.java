@@ -53,6 +53,9 @@ public class AisCoverage {
 		}
 
 		
+		
+		System.out.println("Kasper branch!");
+		
 		int i = 0;
 		while (i < args.length) {
 			if (args[i].indexOf("-t") >= 0) {
