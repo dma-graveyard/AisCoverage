@@ -1,9 +1,9 @@
 AisCoverage
 ======
 
-#### Java application for making AIS coverage analysis ####
-
 ### Introduction ###
+
+Java application for making AIS coverage analysis
 
 TODO
 
