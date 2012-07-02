@@ -19,6 +19,7 @@ import java.util.Date;
 
 import org.apache.log4j.Logger;
 
+import dk.frv.ais.country.Country;
 import dk.frv.ais.geo.GeoLocation;
 import dk.frv.ais.handler.IAisHandler;
 import dk.frv.ais.message.AisMessage;
@@ -43,12 +44,14 @@ public class MessageHandler implements IAisHandler {
 		GeoLocation pos = null;
 		Long bsMmsi = null;
 		Date timestamp = null;
+		Country srcCountry = null;
 
 		// Get source tag properties
 		IProprietarySourceTag sourceTag = aisMessage.getSourceTag();
 		if (sourceTag != null) {
 			bsMmsi = sourceTag.getBaseMmsi();
 			timestamp = sourceTag.getTimestamp();
+			srcCountry = sourceTag.getCountry();
 		}
 		
 		// What to do if no bsMmsi or timestamp?
@@ -76,6 +79,8 @@ public class MessageHandler implements IAisHandler {
 
 		// Examples
 		LOG.debug("----");
+		LOG.debug("BS      : " + bsMmsi);
+		LOG.debug("Country : " + ((srcCountry != null) ? srcCountry.getTwoLetter() : "null"));
 		LOG.debug("mmsi    : " + posMessage.getUserId());
 		LOG.debug("position: " + pos);
 		LOG.debug("sog     : " + posMessage.getSog());

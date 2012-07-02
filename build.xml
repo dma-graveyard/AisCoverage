@@ -34,8 +34,12 @@
 			<fileset dir="${src.dir}" includes="**/*.xml"/>
 		</copy>
 	</target>
+	
+	<target name="input-runargs" unless="args" description="prompts for command line arguments if necessary">
+	  <input addProperty="args" message="Type the desired command line arguments:"/>
+	</target>
 
-	<target name="run" depends="compile">
+	<target name="run" depends="compile,input-runargs">
 		<java classname="dk.dma.aiscoverage.AisCoverage" fork="true" dir="${basedir}">
 			<classpath>
 				<pathelement path="${build.classes.dir}"/>
@@ -44,6 +48,7 @@
 				</fileset>
 				<pathelement path="${basedir}"/>
 			</classpath>
+			<arg line="${args}"/>
 		</java>
 	</target>
 
