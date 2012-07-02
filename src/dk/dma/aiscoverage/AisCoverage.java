@@ -52,6 +52,7 @@ public class AisCoverage {
 			System.exit(1);
 		}
 
+		
 		int i = 0;
 		while (i < args.length) {
 			if (args[i].indexOf("-t") >= 0) {
