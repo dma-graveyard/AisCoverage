@@ -89,12 +89,15 @@ public class AisCoverage {
 
 		// Make handler instance
 		MessageHandler messageHandler = new MessageHandler();
+		messageHandler.initGrid(1,1,50,50,10);
+		
+		System.out.println(messageHandler.getCell(1.0001, 1.0002).id);
 
 		// Register handler and start reader
-		aisReader.registerHandler(messageHandler);
-		aisReader.start();
-
-		aisReader.join();
+//		aisReader.registerHandler(messageHandler);
+//		aisReader.start();
+//
+//		aisReader.join();
 
 	}
 
