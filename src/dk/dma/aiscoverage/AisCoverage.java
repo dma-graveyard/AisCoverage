@@ -91,19 +91,24 @@ public class AisCoverage {
 		MessageHandler messageHandler = new MessageHandler();
 		
 		// Register handler and start reader
-//		aisReader.registerHandler(messageHandler);
-//		aisReader.start();
-//
-//		aisReader.join();
+		aisReader.registerHandler(messageHandler);
+		aisReader.start();
+
+		aisReader.join();
 		
 //		double[] coords = MercatorConverter.merc(10, 85);
 //		System.out.println(coords[0]);
 //		System.out.println(coords[1]);
 		
-		GridHandler handler = new GridHandler(0.1);
-		handler.createGrid(1L);
-		Grid g = handler.getGrid(1L);
-		System.out.println(g.getCellId(-41.15, -40.4));
+//		GridHandler handler = new GridHandler(0.05);
+//		handler.createGrid(1L);
+//		Grid g = handler.getGrid(1L);
+//		System.out.println(g.getCellId(1.20003, 1.2));
+//		double test = 1.175;
+//		System.out.println( (double)((int)(10000*(test - (test % 0.05))))/10000 );
+		
+	
+		
 
 	}
 

@@ -2,12 +2,17 @@ package dk.dma.aiscoverage;
 
 public class Cell {
 
-	Long	id,
+	Long	
 			NOofReceivedSignals=0L, 
 			NOofMissingSignals=0L;
 	
 	double 	distanceToNearestBasestation, 
-			coverage,
 			latitude,
 			longitude;
+	
+	String id;
+	
+	public double getCoverage(){
+		return NOofReceivedSignals/(NOofReceivedSignals+NOofMissingSignals);
+	}
 }

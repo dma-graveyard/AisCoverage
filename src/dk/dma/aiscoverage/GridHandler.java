@@ -5,13 +5,13 @@ import java.util.HashMap;
 public class GridHandler {
 
 	public HashMap<Long, Grid> grids = new HashMap<Long, Grid>();
-	public HashMap<Long, Ship> ships = new HashMap<Long, Ship>();
 	
 	private double cellSize;
 	
 	public GridHandler(double cellSize){
 		this.cellSize = cellSize;
 	}
+	
 	/*
 	 * Create grid associated to a specific transponder
 	 */
@@ -22,17 +22,5 @@ public class GridHandler {
 	
 	public Grid getGrid(Long bsMmsi){
 		return grids.get(bsMmsi);
-	}
-	
-	/*
-	 * Create ship
-	 */
-	public void createShip(Long mmsi){
-		Ship ship = new Ship(mmsi);
-		ships.put(mmsi, ship);
-	}
-	
-	public Ship getShip(Long mmsi){
-		return ships.get(mmsi);
 	}
 }

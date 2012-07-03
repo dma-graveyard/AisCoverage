@@ -6,7 +6,10 @@ import dk.frv.ais.geo.GeoLocation;
 
 public class Grid {
 	
-	public HashMap<Long, Cell> grid = new HashMap<Long, Cell>();
+	public HashMap<String, Cell> grid = new HashMap<String, Cell>();
+	
+	public HashMap<Long, Ship> ships = new HashMap<Long, Ship>();
+	
 	
 	private Long bsMmsi;
 	
@@ -18,10 +21,9 @@ public class Grid {
 					NOofColumns,
 					NOofRows;
 	
-	public Grid(Long bsMmsi, int cellSize) {
+	public Grid(Long bsMmsi, double cellSize) {
 		this.bsMmsi = bsMmsi;
 		this.cellSize = cellSize;
-		this.NOofColumns = 127563200/cellSize;
 	}
 	
 //	public Cell getCell(long cellId){
@@ -35,33 +37,51 @@ public class Grid {
 		return grid.get(getCellId(latitude, longitude));
 	}
 	
-	public Long getCellId(double latitude, double longitude){
-		GeoLocation target = new GeoLocation();
-		target.setLatitude(latitude);
-		target.setLongitude(longitude);
+	/*
+	 * latitude is rounded down
+	 * longitude is rounded up.
+	 * The id is lat-lon-coords representing top-left point in cell
+	 */
+	public String getCellId(double latitude, double longitude){
+		double lat;
+		double lon;
+		if(latitude < 0){
+			latitude -=cellSize;
+			lat = (double)((int)(10000*((latitude)- (latitude % 0.05))))/10000;
+			
+		}else{
+			lat = (double)((int)(10000*((latitude)- (latitude % 0.05))))/10000;
+		}
 		
-		GeoLocation basePoint1 = new GeoLocation();
-		basePoint1.setLatitude(0);
-		basePoint1.setLongitude(longitude);
+		if(longitude < 0){
+			lon = (double)((int)(10000*(longitude - (longitude % 0.05))))/10000;
+			
+		}else{
+			longitude +=cellSize;
+			lon = (double)((int)(10000*(longitude - (longitude % 0.05))))/10000;
+		}
 		
-		GeoLocation basePoint2 = new GeoLocation();
-		basePoint2.setLatitude(latitude);
-		basePoint2.setLongitude(0);
-		
-		double x = basePoint1.getRhumbLineDistance(target);
-		System.out.println("width:" + x);
-		
-		double y = basePoint2.getRhumbLineDistance(target);
-		System.out.println("height:" + y);
-
-		Long cellId =  ((long)(y/cellSize) * NOofColumns + ((long)(x/cellSize)+1));
-		
+		String cellId =  lat+"_"+lon;	
 		return cellId;
 	}
 	
 	public void createCell(double latitude, double longitude){
 		Cell cell = new Cell();
 		cell.id=getCellId(latitude, longitude);
+		cell.latitude = (double)((int)(10000*(latitude - (latitude % 0.05))))/10000;
+		cell.longitude = (double)((int)(10000*(longitude - (longitude % 0.05))))/10000;
 		grid.put(cell.id, cell);
+	}
+	
+	/*
+	 * Create ship
+	 */
+	public void createShip(Long mmsi){
+		Ship ship = new Ship(mmsi);
+		ships.put(mmsi, ship);
+	}
+	
+	public Ship getShip(Long mmsi){
+		return ships.get(mmsi);
 	}
 }

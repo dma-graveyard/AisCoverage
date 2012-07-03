@@ -7,15 +7,18 @@ import dk.frv.ais.message.AisPositionMessage;
 
 public class Ship {
 	
-	private Long mmsi;
-	private AisPositionMessage lastMessage;
+	public Long mmsi;
+	private CustomMessage lastMessage = null;
 
 	public Ship(Long mmsi) {
 		this.mmsi = mmsi;
 	}
 	
-	public void setLastMessage(AisPositionMessage message){
+	public void setLastMessage(CustomMessage message){
 		this.lastMessage = message;
+	}
+	public CustomMessage getLastMessage(){
+		return lastMessage;
 	}
 	
 

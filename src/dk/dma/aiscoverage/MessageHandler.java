@@ -37,7 +37,7 @@ public class MessageHandler implements IAisHandler {
 	
 	private long count = 0;
 	
-	private GridHandler gridHandler = new GridHandler(5000);
+	public GridHandler gridHandler = new GridHandler(5000);
 
 
 	/**
@@ -89,19 +89,25 @@ public class MessageHandler implements IAisHandler {
 //		LOG.debug("mmsi    : " + posMessage.getUserId());
 //		LOG.debug("position: " + pos);
 //		LOG.debug("sog     : " + posMessage.getSog());
+//		LOG.debug("Timestamp   : " + timestamp);
 
 //		System.out.println(bsMmsi);
 		
 		// Do dataprocessing here
 		
+		
+		//Check if grid exist (If a message with that bsmmsi has been received before)
+		//otherwise create a grid
 		Grid grid = gridHandler.getGrid(bsMmsi);
 		if(grid == null){
 			gridHandler.createGrid(bsMmsi);
 			grid = gridHandler.getGrid(bsMmsi);
 		}
 		
-		if(gridHandler.getShip(posMessage.getUserId()) == null){
-			gridHandler.createShip(posMessage.getUserId());
+		Ship ship = grid.getShip(posMessage.getUserId());
+		if(ship == null){
+			grid.createShip(posMessage.getUserId());
+			ship = grid.getShip(posMessage.getUserId());
 		}
 		
 		Cell cell = grid.getCell(pos.getLatitude(), pos.getLongitude());
@@ -110,20 +116,46 @@ public class MessageHandler implements IAisHandler {
 			cell = grid.getCell(pos.getLatitude(), pos.getLongitude());
 		}
 		
-		System.out.println("shiops: " + gridHandler.ships.size());
-		System.out.println("modtagere: " + gridHandler.grids.size());
-		System.out.println(posMessage.getPos().getLatitude());
-		System.out.println("NO of cells: " + grid.grid.size());
+		//Filter messages, based on rules of thumb
 		
-		cell.NOofReceivedSignals++;
-		System.out.println("Received in that cell: " + cell.NOofReceivedSignals);
-//		grid.getCell(pos.getLatitude(), pos.getLongitude());
+		
+		//calculate stuff
+		if(ship.getLastMessage() != null){
+			GeoLocation oldPos = ship.getLastMessage().message.getPos().getGeoLocation();
+			if(grid.getCellId(oldPos.getLatitude(), oldPos.getLongitude()).equals(cell.id)){
+				
+				double distance = oldPos.getRhumbLineDistance(pos);
+				long seconds = (timestamp.getTime() - ship.getLastMessage().timestamp.getTime())/1000;
+				
+				System.out.println(ship.mmsi +"\t WEEEEEH, same cell, hurrayyy");
+				System.out.println(ship.mmsi +"\t distance \t" + distance);
+				System.out.println(ship.mmsi +"\t SOG \t" + posMessage.getSog());
+				System.out.println(ship.mmsi +"Seconds since last message \t" + seconds);
+				
+			}else{
+				System.out.println("New cell, lets ignore");
+			}
+		}
+		
+		//Store received message as lastMessage in ship
+		CustomMessage newMessage = new CustomMessage();
+		newMessage.message = posMessage;
+		newMessage.timestamp = timestamp;
+		ship.setLastMessage(newMessage);
 
 		
 		
 		
+//		System.out.println("shiops: " + gridHandler.ships.size());
+//		System.out.println("modtagere: " + gridHandler.grids.size());
+//		System.out.println(posMessage.getPos().getLatitude());
+//		System.out.println("NO of cells: " + grid.grid.size());
+//		
+//		cell.NOofReceivedSignals++;
+//		System.out.println("Received in that cell: " + cell.NOofReceivedSignals);
+//		grid.getCell(pos.getLatitude(), pos.getLongitude());
+
 		
-		//convert to Lat/long to metric
 
 	}
 	
