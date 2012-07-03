@@ -7,9 +7,9 @@ public class GridHandler {
 	public HashMap<Long, Grid> grids = new HashMap<Long, Grid>();
 	public HashMap<Long, Ship> ships = new HashMap<Long, Ship>();
 	
-	private int cellSize;
+	private double cellSize;
 	
-	public GridHandler(int cellSize){
+	public GridHandler(double cellSize){
 		this.cellSize = cellSize;
 	}
 	/*

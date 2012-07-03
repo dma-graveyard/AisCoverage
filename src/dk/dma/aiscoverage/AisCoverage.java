@@ -100,7 +100,7 @@ public class AisCoverage {
 //		System.out.println(coords[0]);
 //		System.out.println(coords[1]);
 		
-		GridHandler handler = new GridHandler(5000);
+		GridHandler handler = new GridHandler(0.1);
 		handler.createGrid(1L);
 		Grid g = handler.getGrid(1L);
 		System.out.println(g.getCellId(-41.15, -40.4));

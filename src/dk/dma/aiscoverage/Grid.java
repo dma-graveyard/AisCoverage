@@ -11,10 +11,10 @@ public class Grid {
 	private Long bsMmsi;
 	
 	private double 	startLatitude,
+					cellSize,
 					startLongitude; 
 	private int 	gridWidth,
 					gridHeight,
-					cellSize,
 					NOofColumns,
 					NOofRows;
 	
