@@ -89,15 +89,21 @@ public class AisCoverage {
 
 		// Make handler instance
 		MessageHandler messageHandler = new MessageHandler();
-		messageHandler.initGrid(1,1,50,50,10);
 		
-		System.out.println(messageHandler.getCell(1.0001, 1.0002).id);
-
 		// Register handler and start reader
 //		aisReader.registerHandler(messageHandler);
 //		aisReader.start();
 //
 //		aisReader.join();
+		
+//		double[] coords = MercatorConverter.merc(10, 85);
+//		System.out.println(coords[0]);
+//		System.out.println(coords[1]);
+		
+		GridHandler handler = new GridHandler(5000);
+		handler.createGrid(1L);
+		Grid g = handler.getGrid(1L);
+		System.out.println(g.getCellId(-41.15, -40.4));
 
 	}
 

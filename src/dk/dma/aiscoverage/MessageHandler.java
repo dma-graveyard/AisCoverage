@@ -34,19 +34,11 @@ public class MessageHandler implements IAisHandler {
 	
 	private static Logger LOG = Logger.getLogger(MessageHandler.class);
 	
+	
 	private long count = 0;
 	
-	private ArrayList<Cell> grid = new ArrayList<Cell>();
-	private double 	startLatitude,
-					startLongitude; 
-	private int 	gridWidth, 
-					gridHeight,
-					cellSize,
-					NOofColumns,
-					NOofRows;
-	
-	
-	
+	private GridHandler gridHandler = new GridHandler(5000);
+
 
 	/**
 	 * Message for receiving AIS messages
@@ -91,14 +83,45 @@ public class MessageHandler implements IAisHandler {
 		pos = posMessage.getPos().getGeoLocation();
 
 		// Examples
-		LOG.debug("----");
-		LOG.debug("BS      : " + bsMmsi);
-		LOG.debug("Country : " + ((srcCountry != null) ? srcCountry.getTwoLetter() : "null"));
-		LOG.debug("mmsi    : " + posMessage.getUserId());
-		LOG.debug("position: " + pos);
-		LOG.debug("sog     : " + posMessage.getSog());
+//		LOG.debug("----");
+//		LOG.debug("BS      : " + bsMmsi);
+//		LOG.debug("Country : " + ((srcCountry != null) ? srcCountry.getTwoLetter() : "null"));
+//		LOG.debug("mmsi    : " + posMessage.getUserId());
+//		LOG.debug("position: " + pos);
+//		LOG.debug("sog     : " + posMessage.getSog());
 
+//		System.out.println(bsMmsi);
+		
 		// Do dataprocessing here
+		
+		Grid grid = gridHandler.getGrid(bsMmsi);
+		if(grid == null){
+			gridHandler.createGrid(bsMmsi);
+			grid = gridHandler.getGrid(bsMmsi);
+		}
+		
+		if(gridHandler.getShip(posMessage.getUserId()) == null){
+			gridHandler.createShip(posMessage.getUserId());
+		}
+		
+		Cell cell = grid.getCell(pos.getLatitude(), pos.getLongitude());
+		if(cell == null){
+			grid.createCell(pos.getLatitude(), pos.getLongitude());
+			cell = grid.getCell(pos.getLatitude(), pos.getLongitude());
+		}
+		
+		System.out.println("shiops: " + gridHandler.ships.size());
+		System.out.println("modtagere: " + gridHandler.grids.size());
+		System.out.println(posMessage.getPos().getLatitude());
+		System.out.println("NO of cells: " + grid.grid.size());
+		
+		cell.NOofReceivedSignals++;
+		System.out.println("Received in that cell: " + cell.NOofReceivedSignals);
+//		grid.getCell(pos.getLatitude(), pos.getLongitude());
+
+		
+		
+		
 		
 		//convert to Lat/long to metric
 
@@ -106,77 +129,6 @@ public class MessageHandler implements IAisHandler {
 	
 	public long getCount() {
 		return count;
-	}
-	
-	
-
-	/*
-	 * 
-	 */
-	public void initGrid(double latitude, double longitude, int width, int height, int cellSize) {
-		this.startLatitude = latitude;
-		this.startLongitude = longitude;
-		this.gridWidth = width;
-		this.gridHeight = height;
-		this.cellSize = cellSize;
-		
-		this.NOofColumns =  width/cellSize;
-		this.NOofRows = height/cellSize;
-		
-		int cellId = 1;
-		for (int i = 0; i < NOofColumns; i++) {
-			for (int j = 0; j < NOofRows; j++) {
-				System.out.print(cellId+"\t");
-				Cell c = new Cell();
-				c.id = cellId;
-				grid.add(c);
-				cellId++;
-			}	
-			System.out.println();
-		}
-		
-		
-	}
-	
-	/*
-	 * 
-	 */
-	public Cell getCell(double latitude, double longitude){
-		GeoLocation lat = new GeoLocation();
-		lat.setLatitude(latitude);
-		
-		GeoLocation lon = new GeoLocation();
-		lon.setLatitude(longitude);
-		
-		GeoLocation startLat = new GeoLocation();
-		startLat.setLatitude(startLatitude);
-		
-		GeoLocation startLon = new GeoLocation();
-		startLon.setLatitude(startLongitude);
-		
-		
-		
-		double x = startLat.getGeodesicDistance(lat);
-		System.out.println(x);
-		double y = startLon.getGeodesicDistance(lon);
-		System.out.println(y);
-		
-		//Checks if target is within grid
-		if(x >= this.gridWidth || x < 0)
-			return null;
-		if(y >= this.gridHeight || y < 0 )
-			return null;
-		
-		int cellId =  ((int)(y/cellSize) * NOofColumns + ((int)(x/cellSize)+1));
-		return this.grid.get(cellId-1);
-	}
-	
-	public class Cell{
-		int		id,
-				NOofReceivedSignals, 
-				NOofMissingSignals;
-		double 	distanceToNearestBasestation, 
-				coverage;
 	}
 
 }
