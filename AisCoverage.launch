@@ -7,6 +7,6 @@
 <listEntry value="1"/>
 </listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="dk.dma.aiscoverage.AisCoverage"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-f C:\Users\Kasper\Desktop\aisdump.txt"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-f C:\Users\Kasper\Desktop\aisdump.txt &gt; test.kml"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="AisCoverage"/>
 </launchConfiguration>

@@ -14,8 +14,9 @@ public class Grid {
 	private Long bsMmsi;
 	
 	private double 	startLatitude,
-					cellSize,
 					startLongitudeM;
+	private double latSize;
+	private double lonSize;
 	public double	transponderLat,
 					transponderLon; 
 	private int 	gridWidth,
@@ -23,9 +24,10 @@ public class Grid {
 					NOofColumns,
 					NOofRows;
 	
-	public Grid(Long bsMmsi, double cellSize) {
+	public Grid(Long bsMmsi, double latSize, double lonSize) {
 		this.bsMmsi = bsMmsi;
-		this.cellSize = cellSize;
+		this.latSize = latSize;
+		this.lonSize = lonSize;
 	}
 	
 //	public Cell getCell(long cellId){
@@ -48,19 +50,19 @@ public class Grid {
 		double lat;
 		double lon;
 		if(latitude < 0){
-			latitude -=cellSize;
-			lat = (double)((int)(10000*((latitude)- (latitude % 0.05))))/10000;
+			latitude +=latSize;
+			lat = (double)((int)(10000*((latitude)- (latitude % latSize))))/10000;
 			
 		}else{
-			lat = (double)((int)(10000*((latitude)- (latitude % 0.05))))/10000;
+			lat = (double)((int)(10000*((latitude)- (latitude % latSize))))/10000;
 		}
 		
 		if(longitude < 0){
-			lon = (double)((int)(10000*(longitude - (longitude % 0.05))))/10000;
+			lon = (double)((int)(10000*(longitude - (longitude % lonSize))))/10000;
 			
 		}else{
-			longitude +=cellSize;
-			lon = (double)((int)(10000*(longitude - (longitude % 0.05))))/10000;
+			longitude -=lonSize;
+			lon = (double)((int)(10000*(longitude - (longitude % lonSize))))/10000;
 		}
 		
 		String cellId =  lat+"_"+lon;	
@@ -70,8 +72,8 @@ public class Grid {
 	public void createCell(double latitude, double longitude){
 		Cell cell = new Cell();
 		cell.id=getCellId(latitude, longitude);
-		cell.latitude = (double)((int)(10000*(latitude - (latitude % 0.05))))/10000;
-		cell.longitude = (double)((int)(10000*(longitude - (longitude % 0.05))))/10000;
+		cell.latitude = (double)((int)(10000*(latitude - (latitude % latSize))))/10000;
+		cell.longitude = (double)((int)(10000*(longitude - (longitude % lonSize))))/10000;
 		grid.put(cell.id, cell);
 	}
 	

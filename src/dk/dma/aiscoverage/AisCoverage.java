@@ -97,17 +97,20 @@ public class AisCoverage {
 
 		aisReader.join();
 		
-		Grid grid = messageHandler.gridHandler.getGrid((long) 2190049);
+		Grid grid = messageHandler.gridHandler.getGrid((long) 2190071);
+//		Grid grid = messageHandler.gridHandler.getGrid((long) 2190065);
 		System.out.println("number of cells: " + grid.grid.size());
 //		System.out.println("transponder lat: " + grid.);
 		
 		Collection<Cell> cells = grid.grid.values();
-		for (Cell cell : cells) {
-			if(cell.getTotalNumberOfMessages() < 10)
-				System.out.println("less than 10 registrants");
-			else
-				System.out.println("lat: "+ cell.latitude + " lon: "+cell.longitude +" Coverage: " + cell.getCoverage());
-		}
+//		for (Cell cell : cells) {
+//			if(cell.getTotalNumberOfMessages() < 10)
+//				System.out.println("less than 10 registrants");
+//			else
+//				System.out.println("lat: "+ cell.latitude + " lon: "+cell.longitude +" Coverage: " + cell.getCoverage());
+//		}
+		
+//		KMLGenerator.generateKML(cells);
 		
 //		double[] coords = MercatorConverter.merc(10, 85);
 //		System.out.println(coords[0]);

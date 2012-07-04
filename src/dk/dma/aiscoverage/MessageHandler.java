@@ -37,7 +37,7 @@ public class MessageHandler implements IAisHandler {
 	
 	private long count = 0;
 	
-	public GridHandler gridHandler = new GridHandler(5000);
+	public GridHandler gridHandler = new GridHandler(0.1, 0.2);
 
 
 	/**
@@ -94,6 +94,31 @@ public class MessageHandler implements IAisHandler {
 //		System.out.println(bsMmsi);
 		
 		// Do dataprocessing here
+		if(bsMmsi == 2190071){
+			if(pos.getLongitude() > 12)
+				System.out.println("D篤篤電電電電電電");
+//			System.out.println("<Placemark>");
+//			System.out.println("<name>Polygon_red</name>");
+//			System.out.println("<styleUrl>#greenStyle</styleUrl>");
+//			System.out.println("<Polygon>");
+//			System.out.println("<tessellate>1</tessellate>");
+//			System.out.println("<outerBoundaryIs>");
+//			System.out.println("<LinearRing>");
+//			System.out.println("<coordinates>");
+//			
+//			System.out.print(pos.getLongitude()+","+pos.getLatitude()+","+0+" ");
+//			System.out.print((pos.getLongitude() + 0.05)+","+pos.getLatitude()+","+0+" ");
+//			System.out.print((pos.getLongitude() + 0.05)+","+(pos.getLatitude() + 0.05)+","+0+" ");
+//			System.out.println(pos.getLongitude()+","+(pos.getLatitude() + 0.05)+","+0);
+//	
+//			System.out.println("</coordinates>");
+//			System.out.println("</LinearRing>");
+//			System.out.println("</outerBoundaryIs>");
+//			System.out.println("</Polygon>");
+//			System.out.println("</Placemark>");
+		}
+		
+		
 		
 		//Check if grid exist (If a message with that bsmmsi has been received before)
 		//otherwise create a grid

@@ -6,17 +6,19 @@ public class GridHandler {
 
 	public HashMap<Long, Grid> grids = new HashMap<Long, Grid>();
 	
-	private double cellSize;
+	private double latSize;
+	private double lonSize;
 	
-	public GridHandler(double cellSize){
-		this.cellSize = cellSize;
+	public GridHandler(double latSize, double lonSize){
+		this.latSize = latSize;
+		this.lonSize = lonSize;
 	}
 	
 	/*
 	 * Create grid associated to a specific transponder
 	 */
 	public void createGrid(Long bsMmsi){
-		Grid grid = new Grid(bsMmsi, cellSize);
+		Grid grid = new Grid(bsMmsi, latSize, lonSize);
 		grids.put(bsMmsi, grid);
 	}
 	
