@@ -17,6 +17,7 @@ package dk.dma.aiscoverage;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.Collection;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
@@ -95,6 +96,18 @@ public class AisCoverage {
 		aisReader.start();
 
 		aisReader.join();
+		
+		Grid grid = messageHandler.gridHandler.getGrid((long) 2190049);
+		System.out.println("number of cells: " + grid.grid.size());
+//		System.out.println("transponder lat: " + grid.);
+		
+		Collection<Cell> cells = grid.grid.values();
+		for (Cell cell : cells) {
+			if(cell.getTotalNumberOfMessages() < 10)
+				System.out.println("less than 10 registrants");
+			else
+				System.out.println("lat: "+ cell.latitude + " lon: "+cell.longitude +" Coverage: " + cell.getCoverage());
+		}
 		
 //		double[] coords = MercatorConverter.merc(10, 85);
 //		System.out.println(coords[0]);

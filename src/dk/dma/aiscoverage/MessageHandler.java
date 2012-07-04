@@ -95,7 +95,6 @@ public class MessageHandler implements IAisHandler {
 		
 		// Do dataprocessing here
 		
-		
 		//Check if grid exist (If a message with that bsmmsi has been received before)
 		//otherwise create a grid
 		Grid grid = gridHandler.getGrid(bsMmsi);
@@ -116,31 +115,26 @@ public class MessageHandler implements IAisHandler {
 			cell = grid.getCell(pos.getLatitude(), pos.getLongitude());
 		}
 		
-		//Filter messages, based on rules of thumb
-		
-		
-		//calculate stuff
-		if(ship.getLastMessage() != null){
-			GeoLocation oldPos = ship.getLastMessage().message.getPos().getGeoLocation();
-			if(grid.getCellId(oldPos.getLatitude(), oldPos.getLongitude()).equals(cell.id)){
-				
-				double distance = oldPos.getRhumbLineDistance(pos);
-				long seconds = (timestamp.getTime() - ship.getLastMessage().timestamp.getTime())/1000;
-				
-				System.out.println(ship.mmsi +"\t WEEEEEH, same cell, hurrayyy");
-				System.out.println(ship.mmsi +"\t distance \t" + distance);
-				System.out.println(ship.mmsi +"\t SOG \t" + posMessage.getSog());
-				System.out.println(ship.mmsi +"Seconds since last message \t" + seconds);
-				
-			}else{
-				System.out.println("New cell, lets ignore");
-			}
-		}
-		
-		//Store received message as lastMessage in ship
 		CustomMessage newMessage = new CustomMessage();
 		newMessage.message = posMessage;
 		newMessage.timestamp = timestamp;
+		newMessage.grid = grid;
+		newMessage.ship = ship;
+		newMessage.cell = cell;
+		newMessage.cell.NOofReceivedSignals++;
+		
+		if(newMessage.ship.getLastMessage() != null)
+			newMessage.timeSinceLastMsg = (newMessage.timestamp.getTime() - newMessage.ship.getLastMessage().timestamp.getTime())/1000;
+		
+		//Filter messages, based on rules of thumb
+		boolean filterMessage = filterMessage(newMessage);
+		
+		//calculate stuff
+		if(filterMessage == false){
+			calculateCoverage(newMessage);
+		}
+		
+		//Store received message as lastMessage in ship
 		ship.setLastMessage(newMessage);
 
 		
@@ -157,6 +151,78 @@ public class MessageHandler implements IAisHandler {
 
 		
 
+	}
+	
+	private void calculateCoverage(CustomMessage customMessage){
+		
+		//Calculate distance since last message
+		GeoLocation oldPos = customMessage.ship.getLastMessage().message.getPos().getGeoLocation();
+		GeoLocation pos = customMessage.message.getPos().getGeoLocation();
+		double distance = oldPos.getRhumbLineDistance(pos);
+		
+		//Determine expected transmitting frequency
+		int expectedTransmittingFrequency;
+		if(customMessage.message.getSog()/10 < 14)
+			expectedTransmittingFrequency = 10;
+		else if(customMessage.message.getSog()/10 < 23)
+			expectedTransmittingFrequency = 6;
+		else 
+			expectedTransmittingFrequency = 2;
+		
+		//Calculate missing messages
+		int missingMessages; 
+		if(customMessage.timeSinceLastMsg <= expectedTransmittingFrequency) //We're good
+			missingMessages = 0;
+		else{
+			missingMessages = (int) (Math.round((double)customMessage.timeSinceLastMsg/(double)expectedTransmittingFrequency)-1);
+		}
+		
+		//Add number of missing and actual received messages to cell
+		customMessage.cell.NOofMissingSignals += missingMessages;
+		
+		//Test print outs
+//		System.out.println("cell coverage: " + customMessage.cell.getCoverage());
+//		System.out.println(customMessage.ship.mmsi +"\t missingMessages \t" + missingMessages);
+//		System.out.println(customMessage.ship.mmsi +"\t expectedFreq \t" + expectedTransmittingFrequency);
+//		System.out.println(customMessage.ship.mmsi +"\t distance \t" + distance);
+//		System.out.println(customMessage.ship.mmsi +"\t SOG \t" + customMessage.message.getSog());
+//		System.out.println(customMessage.ship.mmsi +"Seconds since last message \t" + customMessage.timeSinceLastMsg);
+	}
+
+	
+	private boolean filterMessage(CustomMessage customMessage){
+		boolean filterMessage = false;
+		if(customMessage.message.getSog()/10 < 3 || customMessage.message.getSog()/10 > 50)
+			filterMessage = true;
+		if(customMessage.message.getCog() == 360)
+			filterMessage = true;
+		
+		//if this is the first message for a ship, we don't calculate coverage
+		if(customMessage.ship.getLastMessage() == null) {
+			filterMessage = true;
+		}else{
+			//If lastPoint and newPoint is not in same cell, we ignore the message for now
+			GeoLocation pos = customMessage.message.getPos().getGeoLocation();
+			Cell cell = customMessage.grid.getCell(pos.getLatitude(), pos.getLongitude());
+			GeoLocation oldPos = customMessage.ship.getLastMessage().message.getPos().getGeoLocation();
+			if(!customMessage.grid.getCellId(oldPos.getLatitude(), oldPos.getLongitude()).equals(cell.id)){
+				filterMessage = true;
+//				System.out.println("New cell, lets ignore");
+			}else{
+//				System.out.println(customMessage.ship.mmsi +"\t WEEEEEH, same cell, hurrayyy");
+			}
+			
+			//If time since last message is > 30 minutes, we filter
+			if(customMessage.timeSinceLastMsg > 1800)
+				filterMessage = true;
+			
+			//Check if ship is turning (ignore for now)
+//			if(customMessage.message.getCog())
+//				System.out.println("COGnew: "+customMessage.message.getCog());
+//				System.out.println("COGold: "+customMessage.ship.getLastMessage().message.getCog());		
+			}
+		
+		return filterMessage;
 	}
 	
 	public long getCount() {

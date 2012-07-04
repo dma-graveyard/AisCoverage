@@ -15,7 +15,9 @@ public class Grid {
 	
 	private double 	startLatitude,
 					cellSize,
-					startLongitude; 
+					startLongitudeM;
+	public double	transponderLat,
+					transponderLon; 
 	private int 	gridWidth,
 					gridHeight,
 					NOofColumns,

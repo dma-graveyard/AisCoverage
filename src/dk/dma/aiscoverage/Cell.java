@@ -12,7 +12,10 @@ public class Cell {
 	
 	String id;
 	
+	public long getTotalNumberOfMessages(){
+		return NOofReceivedSignals+NOofMissingSignals;
+	}
 	public double getCoverage(){
-		return NOofReceivedSignals/(NOofReceivedSignals+NOofMissingSignals);
+		return (double)NOofReceivedSignals/ (double)getTotalNumberOfMessages();
 	}
 }
