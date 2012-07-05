@@ -15,21 +15,44 @@
  */
 package dk.dma.aiscoverage;
 
-import java.util.HashMap;
+public class GlobalSettings {
+	
+	//global settings
+	private double lonSize = 0.2;
+	private double latSize = 0.1;
 
-public class Cell {
 	
-	HashMap<Long, Ship> ships = new HashMap<Long, Ship>();
-	Long NOofReceivedSignals=0L; 
-	Long NOofMissingSignals=0L;
-	double latitude;
-	double longitude;
-	String id;
-	
-	public long getTotalNumberOfMessages(){
-		return NOofReceivedSignals+NOofMissingSignals;
+	public double getLonSize() {
+		return lonSize;
 	}
-	public double getCoverage(){
-		return (double)NOofReceivedSignals/ (double)getTotalNumberOfMessages();
+
+	public void setLonSize(double lonSize) {
+		this.lonSize = lonSize;
+	}
+
+	public double getLatSize() {
+		return latSize;
+	}
+
+	public void setLatSize(double latSize) {
+		this.latSize = latSize;
+	}
+	
+	//Singleton stuff
+	private static GlobalSettings singletonObject;
+
+	private GlobalSettings() {
+
+	}
+	
+	public static synchronized GlobalSettings getInstance() {
+		if (singletonObject == null) {
+			singletonObject = new GlobalSettings();
+		}
+		return singletonObject;
+	}
+	
+	public Object clone() throws CloneNotSupportedException {
+		throw new CloneNotSupportedException();
 	}
 }

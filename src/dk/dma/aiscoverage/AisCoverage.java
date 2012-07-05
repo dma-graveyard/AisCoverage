@@ -17,11 +17,8 @@ package dk.dma.aiscoverage;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.Collection;
-
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
-
 import dk.frv.ais.proprietary.DmaFactory;
 import dk.frv.ais.proprietary.GatehouseFactory;
 import dk.frv.ais.reader.AisReader;
@@ -47,15 +44,12 @@ public class AisCoverage {
 		// Read command line arguments
 		String filename = null;
 		String hostPort = null;
+		String outputFile = null;
 
 		if (args.length < 2) {
 			usage();
 			System.exit(1);
 		}
-
-		
-		
-		System.out.println("Kasper branch!");
 		
 		int i = 0;
 		while (i < args.length) {
@@ -63,11 +57,15 @@ public class AisCoverage {
 				hostPort = args[++i];
 			} else if (args[i].indexOf("-f") >= 0) {
 				filename = args[++i];
+			} 
+			
+			if (args[i].indexOf("-out") >= 0) {
+				outputFile = args[++i];
 			}
 			i++;
 		}
 
-		if (filename == null && hostPort == null) {
+		if (filename == null && hostPort == null || outputFile == null) {
 			usage();
 			System.exit(1);
 		}
@@ -88,43 +86,21 @@ public class AisCoverage {
 		aisReader.addProprietaryFactory(new DmaFactory());
 		aisReader.addProprietaryFactory(new GatehouseFactory());
 
+		// set settings
+		GlobalSettings.getInstance().setLonSize(0.05);
+		GlobalSettings.getInstance().setLatSize(0.025);
+		
 		// Make handler instance
-		MessageHandler messageHandler = new MessageHandler();
+		MessageHandler messageHandler = new MessageHandler(10, aisReader);
 		
 		// Register handler and start reader
 		aisReader.registerHandler(messageHandler);
 		aisReader.start();
-
 		aisReader.join();
 		
-		Grid grid = messageHandler.gridHandler.getGrid((long) 2190071);
-//		Grid grid = messageHandler.gridHandler.getGrid((long) 2190065);
-		System.out.println("number of cells: " + grid.grid.size());
-//		System.out.println("transponder lat: " + grid.);
-		
-		Collection<Cell> cells = grid.grid.values();
-//		for (Cell cell : cells) {
-//			if(cell.getTotalNumberOfMessages() < 10)
-//				System.out.println("less than 10 registrants");
-//			else
-//				System.out.println("lat: "+ cell.latitude + " lon: "+cell.longitude +" Coverage: " + cell.getCoverage());
-//		}
-		
-//		KMLGenerator.generateKML(cells);
-		
-//		double[] coords = MercatorConverter.merc(10, 85);
-//		System.out.println(coords[0]);
-//		System.out.println(coords[1]);
-		
-//		GridHandler handler = new GridHandler(0.05);
-//		handler.createGrid(1L);
-//		Grid g = handler.getGrid(1L);
-//		System.out.println(g.getCellId(1.20003, 1.2));
-//		double test = 1.175;
-//		System.out.println( (double)((int)(10000*(test - (test % 0.05))))/10000 );
-		
+		//When all messages are received, generate KML
+		KMLGenerator.generateKML(messageHandler.gridHandler.grids.values(), outputFile);
 	
-		
 
 	}
 

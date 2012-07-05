@@ -1,6 +1,7 @@
 package dk.dma.aiscoverage;
 
 import java.util.Date;
+import java.util.HashMap;
 
 import dk.frv.ais.message.AisPositionMessage;
 

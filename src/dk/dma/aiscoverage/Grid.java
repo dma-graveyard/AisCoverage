@@ -1,41 +1,38 @@
+/* Copyright (c) 2011 Danish Maritime Authority
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package dk.dma.aiscoverage;
 
 import java.util.HashMap;
 
-import dk.frv.ais.geo.GeoLocation;
 
 public class Grid {
 	
 	public HashMap<String, Cell> grid = new HashMap<String, Cell>();
-	
 	public HashMap<Long, Ship> ships = new HashMap<Long, Ship>();
+	public Long bsMmsi;
+
 	
-	
-	private Long bsMmsi;
-	
-	private double 	startLatitude,
-					startLongitudeM;
-	private double latSize;
-	private double lonSize;
-	public double	transponderLat,
-					transponderLon; 
-	private int 	gridWidth,
-					gridHeight,
-					NOofColumns,
-					NOofRows;
-	
-	public Grid(Long bsMmsi, double latSize, double lonSize) {
+	public Grid(Long bsMmsi) {
 		this.bsMmsi = bsMmsi;
-		this.latSize = latSize;
-		this.lonSize = lonSize;
 	}
 	
-//	public Cell getCell(long cellId){
-//		return grid.get(cellId);
-//	}
+
 	
 	/*
-	 * This is a suspect way of calculating global cellIDs
+	 * 
 	 */
 	public Cell getCell(double latitude, double longitude){
 		return grid.get(getCellId(latitude, longitude));
@@ -47,6 +44,9 @@ public class Grid {
 	 * The id is lat-lon-coords representing top-left point in cell
 	 */
 	public String getCellId(double latitude, double longitude){
+		double latSize = GlobalSettings.getInstance().getLatSize();
+		double lonSize = GlobalSettings.getInstance().getLonSize();
+		
 		double lat;
 		double lon;
 		if(latitude < 0){
@@ -70,6 +70,9 @@ public class Grid {
 	}
 	
 	public void createCell(double latitude, double longitude){
+		double latSize = GlobalSettings.getInstance().getLatSize();
+		double lonSize = GlobalSettings.getInstance().getLonSize();
+		
 		Cell cell = new Cell();
 		cell.id=getCellId(latitude, longitude);
 		cell.latitude = (double)((int)(10000*(latitude - (latitude % latSize))))/10000;

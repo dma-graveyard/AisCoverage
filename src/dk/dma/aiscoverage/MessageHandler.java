@@ -15,17 +15,15 @@
  */
 package dk.dma.aiscoverage;
 
-import java.util.ArrayList;
 import java.util.Date;
-
 import org.apache.log4j.Logger;
-
 import dk.frv.ais.country.Country;
 import dk.frv.ais.geo.GeoLocation;
 import dk.frv.ais.handler.IAisHandler;
 import dk.frv.ais.message.AisMessage;
 import dk.frv.ais.message.AisPositionMessage;
 import dk.frv.ais.proprietary.IProprietarySourceTag;
+import dk.frv.ais.reader.AisReader;
 
 /**
  * Class for handling incoming AIS messages
@@ -33,11 +31,20 @@ import dk.frv.ais.proprietary.IProprietarySourceTag;
 public class MessageHandler implements IAisHandler {
 	
 	private static Logger LOG = Logger.getLogger(MessageHandler.class);
-	
-	
 	private long count = 0;
+	private int timeout = -1;
+	public GridHandler gridHandler = new GridHandler();
+	private Date starttime = new Date();
+	private AisReader aisReader = null;
 	
-	public GridHandler gridHandler = new GridHandler(0.1, 0.2);
+	/*
+	 * Timeout is in seconds. 
+	 * If timeout is -1 reader will not stop until everything is read
+	 */
+	public MessageHandler(int timeout, AisReader aisReader){
+		this.timeout = timeout;
+		this.aisReader = aisReader;
+	}
 
 
 	/**
@@ -45,6 +52,13 @@ public class MessageHandler implements IAisHandler {
 	 */
 	@Override
 	public void receive(AisMessage aisMessage) {
+		
+		//Check timeout
+		Date now = new Date();
+		int timeSinceStart = (int) ((now.getTime() - starttime.getTime()) / 1000);
+		if(timeout != -1 && timeSinceStart > timeout)
+			aisReader.stop();
+		
 		AisPositionMessage posMessage = null;
 		GeoLocation pos = null;
 		Long bsMmsi = null;
@@ -82,46 +96,8 @@ public class MessageHandler implements IAisHandler {
 		// Get location
 		pos = posMessage.getPos().getGeoLocation();
 
-		// Examples
-//		LOG.debug("----");
-//		LOG.debug("BS      : " + bsMmsi);
-//		LOG.debug("Country : " + ((srcCountry != null) ? srcCountry.getTwoLetter() : "null"));
-//		LOG.debug("mmsi    : " + posMessage.getUserId());
-//		LOG.debug("position: " + pos);
-//		LOG.debug("sog     : " + posMessage.getSog());
-//		LOG.debug("Timestamp   : " + timestamp);
-
-//		System.out.println(bsMmsi);
-		
-		// Do dataprocessing here
-		if(bsMmsi == 2190071){
-			if(pos.getLongitude() > 12)
-				System.out.println("D篤篤電電電電電電");
-//			System.out.println("<Placemark>");
-//			System.out.println("<name>Polygon_red</name>");
-//			System.out.println("<styleUrl>#greenStyle</styleUrl>");
-//			System.out.println("<Polygon>");
-//			System.out.println("<tessellate>1</tessellate>");
-//			System.out.println("<outerBoundaryIs>");
-//			System.out.println("<LinearRing>");
-//			System.out.println("<coordinates>");
-//			
-//			System.out.print(pos.getLongitude()+","+pos.getLatitude()+","+0+" ");
-//			System.out.print((pos.getLongitude() + 0.05)+","+pos.getLatitude()+","+0+" ");
-//			System.out.print((pos.getLongitude() + 0.05)+","+(pos.getLatitude() + 0.05)+","+0+" ");
-//			System.out.println(pos.getLongitude()+","+(pos.getLatitude() + 0.05)+","+0);
-//	
-//			System.out.println("</coordinates>");
-//			System.out.println("</LinearRing>");
-//			System.out.println("</outerBoundaryIs>");
-//			System.out.println("</Polygon>");
-//			System.out.println("</Placemark>");
-		}
-		
-		
-		
-		//Check if grid exist (If a message with that bsmmsi has been received before)
-		//otherwise create a grid
+		//Check if grid exists (If a message with that bsmmsi has been received before)
+		//otherwise create a grid for corresponding base station
 		Grid grid = gridHandler.getGrid(bsMmsi);
 		if(grid == null){
 			gridHandler.createGrid(bsMmsi);
@@ -159,22 +135,11 @@ public class MessageHandler implements IAisHandler {
 			calculateCoverage(newMessage);
 		}
 		
+		//add ship to cell
+		newMessage.cell.ships.put(newMessage.ship.mmsi, newMessage.ship);
+				
 		//Store received message as lastMessage in ship
 		ship.setLastMessage(newMessage);
-
-		
-		
-		
-//		System.out.println("shiops: " + gridHandler.ships.size());
-//		System.out.println("modtagere: " + gridHandler.grids.size());
-//		System.out.println(posMessage.getPos().getLatitude());
-//		System.out.println("NO of cells: " + grid.grid.size());
-//		
-//		cell.NOofReceivedSignals++;
-//		System.out.println("Received in that cell: " + cell.NOofReceivedSignals);
-//		grid.getCell(pos.getLatitude(), pos.getLongitude());
-
-		
 
 	}
 	
@@ -202,16 +167,10 @@ public class MessageHandler implements IAisHandler {
 			missingMessages = (int) (Math.round((double)customMessage.timeSinceLastMsg/(double)expectedTransmittingFrequency)-1);
 		}
 		
+		
 		//Add number of missing and actual received messages to cell
 		customMessage.cell.NOofMissingSignals += missingMessages;
 		
-		//Test print outs
-//		System.out.println("cell coverage: " + customMessage.cell.getCoverage());
-//		System.out.println(customMessage.ship.mmsi +"\t missingMessages \t" + missingMessages);
-//		System.out.println(customMessage.ship.mmsi +"\t expectedFreq \t" + expectedTransmittingFrequency);
-//		System.out.println(customMessage.ship.mmsi +"\t distance \t" + distance);
-//		System.out.println(customMessage.ship.mmsi +"\t SOG \t" + customMessage.message.getSog());
-//		System.out.println(customMessage.ship.mmsi +"Seconds since last message \t" + customMessage.timeSinceLastMsg);
 	}
 
 	
