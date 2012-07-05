@@ -111,7 +111,8 @@ public class KMLGenerator {
 
 				//We ignore cells, where average number of messages, is below 10 per ship
 				//Maybe there is a bug in AISMessage system, that assign some messages to wrong Base Stations
-				if (cell.NOofReceivedSignals / cell.ships.size() > 10) {
+				//Bug found and fixed
+//				if (cell.NOofReceivedSignals / cell.ships.size() > 10) {
 					
 					if (cell.getCoverage() > 0.8) { // green
 						generatePlacemark("#greenStyle", cell, 300, out);
@@ -121,7 +122,7 @@ public class KMLGenerator {
 						generatePlacemark("#redStyle", cell, 100, out);
 					}
 					
-				}
+//				}
 
 			}
 

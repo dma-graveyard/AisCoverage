@@ -56,8 +56,9 @@ public class MessageHandler implements IAisHandler {
 		//Check timeout
 		Date now = new Date();
 		int timeSinceStart = (int) ((now.getTime() - starttime.getTime()) / 1000);
-		if(timeout != -1 && timeSinceStart > timeout)
+		if(timeout != -1 && timeSinceStart > timeout)		
 			aisReader.stop();
+
 		
 		AisPositionMessage posMessage = null;
 		GeoLocation pos = null;

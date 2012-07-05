@@ -45,6 +45,7 @@ public class AisCoverage {
 		String filename = null;
 		String hostPort = null;
 		String outputFile = null;
+		int timeout = -1;
 
 		if (args.length < 2) {
 			usage();
@@ -53,16 +54,18 @@ public class AisCoverage {
 		
 		int i = 0;
 		while (i < args.length) {
-			if (args[i].indexOf("-t") >= 0) {
+			if (args[i].equals("-t")) {
 				hostPort = args[++i];
-			} else if (args[i].indexOf("-f") >= 0) {
+				System.out.println("kjn");
+			} else if (args[i].equals("-f")) {
 				filename = args[++i];
-			} 
-			
-			if (args[i].indexOf("-out") >= 0) {
+			} else if (args[i].equals("-out")) {
 				outputFile = args[++i];
+			} else if (args[i].equals("-timeout")) {
+				timeout = Integer.parseInt(args[++i]);
+			} else{
+				i++;
 			}
-			i++;
 		}
 
 		if (filename == null && hostPort == null || outputFile == null) {
@@ -91,7 +94,7 @@ public class AisCoverage {
 		GlobalSettings.getInstance().setLatSize(0.025);
 		
 		// Make handler instance
-		MessageHandler messageHandler = new MessageHandler(10, aisReader);
+		MessageHandler messageHandler = new MessageHandler(timeout, aisReader);
 		
 		// Register handler and start reader
 		aisReader.registerHandler(messageHandler);

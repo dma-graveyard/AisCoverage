@@ -20,6 +20,17 @@ public class GlobalSettings {
 	//global settings
 	private double lonSize = 0.2;
 	private double latSize = 0.1;
+	
+	//Getters and setters
+	public int getMessagesPerShipThreshold() {
+		return messagesPerShipThreshold;
+	}
+
+	public void setMessagesPerShipThreshold(int messagesPerShipThreshold) {
+		this.messagesPerShipThreshold = messagesPerShipThreshold;
+	}
+
+	private int messagesPerShipThreshold;
 
 	
 	public double getLonSize() {
