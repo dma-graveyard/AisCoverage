@@ -20,6 +20,7 @@ import java.io.FileNotFoundException;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 
+import dk.dma.aiscoverage.calculator.CoverageCalculatorAdvanced;
 import dk.dma.aiscoverage.calculator.CoverageCalculatorSimple;
 import dk.frv.ais.proprietary.DmaFactory;
 import dk.frv.ais.proprietary.GatehouseFactory;
@@ -58,7 +59,6 @@ public class AisCoverage {
 		while (i < args.length) {
 			if (args[i].equals("-t")) {
 				hostPort = args[++i];
-				System.out.println("kjn");
 			} else if (args[i].equals("-f")) {
 				filename = args[++i];
 			} else if (args[i].equals("-out")) {
@@ -93,11 +93,10 @@ public class AisCoverage {
 		aisReader.addProprietaryFactory(new DmaFactory());
 		aisReader.addProprietaryFactory(new GatehouseFactory());
 
-		// set settings
-		//?
 		
 		// Make handler instance
-		MessageHandler messageHandler = new MessageHandler(timeout, aisReader, new CoverageCalculatorSimple());
+		MessageHandler messageHandler = new MessageHandler(timeout, aisReader, new CoverageCalculatorAdvanced());
+//		MessageHandler messageHandler = new MessageHandler(timeout, aisReader, new CoverageCalculatorSimple());
 		
 		// Register handler and start reader
 		aisReader.registerHandler(messageHandler);

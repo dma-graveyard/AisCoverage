@@ -37,7 +37,7 @@ public class CoverageCalculatorSimple extends AbstractCoverageCalculator{
 				}
 				
 				
-				//Add number of missing and actual received messages to cell
+				//Add number of missing messages to cell
 				customMessage.cell.NOofMissingSignals += missingMessages;
 		
 	}

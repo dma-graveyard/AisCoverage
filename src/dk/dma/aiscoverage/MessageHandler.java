@@ -43,6 +43,8 @@ public class MessageHandler implements IAisHandler {
 	/*
 	 * Timeout is in seconds. 
 	 * If timeout is -1 reader will not stop until everything is read
+	 * AisReader is only used to stop processing messages
+	 * 
 	 */
 	public MessageHandler(int timeout, AisReader aisReader, AbstractCoverageCalculator calculator){
 		this.timeout = timeout;
@@ -107,14 +109,16 @@ public class MessageHandler implements IAisHandler {
 			GlobalSettings.getInstance().setLonSize(gridHandler.metersToLonDegree(pos.getLatitude(), cellInMeters));
 		}
 
-		//Check if grid exists (If a message with that bsmmsi has been received before)
-		//otherwise create a grid for corresponding base station
+		// Check if grid exists (If a message with that bsmmsi has been received before)
+		// Otherwise create a grid for corresponding base station
 		Grid grid = gridHandler.getGrid(bsMmsi);
 		if(grid == null){
 			gridHandler.createGrid(bsMmsi);
 			grid = gridHandler.getGrid(bsMmsi);
 		}
 		
+		// Check which ship sent the message.
+		// If it's the first message from that ship, create ship and put it in grid belonging to bsmmsi
 		Ship ship = grid.getShip(posMessage.getUserId());
 		if(ship == null){
 			grid.createShip(posMessage.getUserId());
@@ -139,7 +143,7 @@ public class MessageHandler implements IAisHandler {
 			newMessage.timeSinceLastMsg = (newMessage.timestamp.getTime() - newMessage.ship.getLastMessage().timestamp.getTime())/1000;
 		
 		//Filter messages, based on rules of thumb
-		boolean filterMessage = filterMessage(newMessage);
+		boolean filterMessage = calculator.filterMessage(newMessage);
 		
 		//calculate stuff
 		if(filterMessage == false){
@@ -152,33 +156,6 @@ public class MessageHandler implements IAisHandler {
 		//Store received message as lastMessage in ship
 		ship.setLastMessage(newMessage);
 
-	}
-
-
-	
-	private boolean filterMessage(CustomMessage customMessage){
-		boolean filterMessage = false;
-		if(customMessage.message.getSog()/10 < 3 || customMessage.message.getSog()/10 > 50)
-			filterMessage = true;
-		if(customMessage.message.getCog() == 360)
-			filterMessage = true;
-		
-		//if this is the first message for a ship, we don't calculate coverage
-		if(customMessage.ship.getLastMessage() == null) {
-			filterMessage = true;
-		}else{
-
-			//If time since last message is > 30 minutes, we filter
-			if(customMessage.timeSinceLastMsg > 1800)
-				filterMessage = true;
-			
-			//Check if ship is turning (ignore for now)
-//			if(customMessage.message.getCog())
-//				System.out.println("COGnew: "+customMessage.message.getCog());
-//				System.out.println("COGold: "+customMessage.ship.getLastMessage().message.getCog());		
-			}
-		
-		return filterMessage;
 	}
 	
 	public long getCount() {

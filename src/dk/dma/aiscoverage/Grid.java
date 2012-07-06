@@ -69,7 +69,7 @@ public class Grid {
 		return cellId;
 	}
 	
-	public void createCell(double latitude, double longitude){
+	public Cell createCell(double latitude, double longitude){
 		double latSize = GlobalSettings.getInstance().getLatSize();
 		double lonSize = GlobalSettings.getInstance().getLonSize();
 		
@@ -78,6 +78,8 @@ public class Grid {
 		cell.latitude = (double)((int)(10000*(latitude - (latitude % latSize))))/10000;
 		cell.longitude = (double)((int)(10000*(longitude - (longitude % lonSize))))/10000;
 		grid.put(cell.id, cell);
+		
+		return cell;
 	}
 	
 	/*
