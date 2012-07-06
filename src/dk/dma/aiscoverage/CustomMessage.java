@@ -6,7 +6,7 @@ import java.util.HashMap;
 import dk.frv.ais.message.AisPositionMessage;
 
 public class CustomMessage {
-	AisPositionMessage message = null;
+	public AisPositionMessage message = null;
 	Date timestamp = null;
 	public Grid grid;
 	public Ship ship;

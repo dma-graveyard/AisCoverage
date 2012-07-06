@@ -19,6 +19,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
+
+import dk.dma.aiscoverage.calculator.CoverageCalculatorSimple;
 import dk.frv.ais.proprietary.DmaFactory;
 import dk.frv.ais.proprietary.GatehouseFactory;
 import dk.frv.ais.reader.AisReader;
@@ -95,7 +97,7 @@ public class AisCoverage {
 		//?
 		
 		// Make handler instance
-		MessageHandler messageHandler = new MessageHandler(timeout, aisReader);
+		MessageHandler messageHandler = new MessageHandler(timeout, aisReader, new CoverageCalculatorSimple());
 		
 		// Register handler and start reader
 		aisReader.registerHandler(messageHandler);

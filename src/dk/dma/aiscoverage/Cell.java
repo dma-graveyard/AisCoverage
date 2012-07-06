@@ -21,10 +21,10 @@ public class Cell {
 	
 	HashMap<Long, Ship> ships = new HashMap<Long, Ship>();
 	Long NOofReceivedSignals=0L; 
-	Long NOofMissingSignals=0L;
+	public Long NOofMissingSignals=0L;
 	double latitude;
 	double longitude;
-	String id;
+	public String id;
 	
 	public long getTotalNumberOfMessages(){
 		return NOofReceivedSignals+NOofMissingSignals;

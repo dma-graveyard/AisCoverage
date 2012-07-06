@@ -17,6 +17,8 @@ package dk.dma.aiscoverage;
 
 import java.util.Date;
 import org.apache.log4j.Logger;
+
+import dk.dma.aiscoverage.calculator.AbstractCoverageCalculator;
 import dk.frv.ais.country.Country;
 import dk.frv.ais.geo.GeoLocation;
 import dk.frv.ais.handler.IAisHandler;
@@ -36,14 +38,16 @@ public class MessageHandler implements IAisHandler {
 	public GridHandler gridHandler = new GridHandler();
 	private Date starttime = new Date();
 	private AisReader aisReader = null;
+	private AbstractCoverageCalculator calculator = null;
 	
 	/*
 	 * Timeout is in seconds. 
 	 * If timeout is -1 reader will not stop until everything is read
 	 */
-	public MessageHandler(int timeout, AisReader aisReader){
+	public MessageHandler(int timeout, AisReader aisReader, AbstractCoverageCalculator calculator){
 		this.timeout = timeout;
 		this.aisReader = aisReader;
+		this.calculator = calculator;
 	}
 
 
@@ -139,7 +143,7 @@ public class MessageHandler implements IAisHandler {
 		
 		//calculate stuff
 		if(filterMessage == false){
-			calculateCoverage(newMessage);
+			calculator.calculateCoverage(newMessage);
 		}
 		
 		//add ship to cell
@@ -149,42 +153,7 @@ public class MessageHandler implements IAisHandler {
 		ship.setLastMessage(newMessage);
 
 	}
-	
-	private void calculateCoverage(CustomMessage customMessage){
-		
-		//If lastPoint and newPoint is not in same cell, we ignore the message for now
-		GeoLocation pos = customMessage.message.getPos().getGeoLocation();
-		Cell cell = customMessage.grid.getCell(pos.getLatitude(), pos.getLongitude());
-		GeoLocation oldPos = customMessage.ship.getLastMessage().message.getPos().getGeoLocation();
-		if(!customMessage.grid.getCellId(oldPos.getLatitude(), oldPos.getLongitude()).equals(cell.id)){
-			return;
-		}
-		
-		//Calculate distance since last message
-		double distance = oldPos.getRhumbLineDistance(pos);
-		
-		//Determine expected transmitting frequency
-		int expectedTransmittingFrequency;
-		if(customMessage.message.getSog()/10 < 14)
-			expectedTransmittingFrequency = 10;
-		else if(customMessage.message.getSog()/10 < 23)
-			expectedTransmittingFrequency = 6;
-		else 
-			expectedTransmittingFrequency = 2;
-		
-		//Calculate missing messages
-		int missingMessages; 
-		if(customMessage.timeSinceLastMsg <= expectedTransmittingFrequency) //We're good
-			missingMessages = 0;
-		else{
-			missingMessages = (int) (Math.round((double)customMessage.timeSinceLastMsg/(double)expectedTransmittingFrequency)-1);
-		}
-		
-		
-		//Add number of missing and actual received messages to cell
-		customMessage.cell.NOofMissingSignals += missingMessages;
-		
-	}
+
 
 	
 	private boolean filterMessage(CustomMessage customMessage){
