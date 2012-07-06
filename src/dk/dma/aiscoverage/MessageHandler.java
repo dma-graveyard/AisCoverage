@@ -52,7 +52,7 @@ public class MessageHandler implements IAisHandler {
 	 */
 	@Override
 	public void receive(AisMessage aisMessage) {
-		
+
 		//Check timeout
 		Date now = new Date();
 		int timeSinceStart = (int) ((now.getTime() - starttime.getTime()) / 1000);
@@ -96,6 +96,12 @@ public class MessageHandler implements IAisHandler {
 		
 		// Get location
 		pos = posMessage.getPos().getGeoLocation();
+		
+		if(GlobalSettings.getInstance().getLatSize() == -1){
+			double cellInMeters= GlobalSettings.getInstance().getCellInMeters();
+			GlobalSettings.getInstance().setLatSize(gridHandler.metersToLatDegree(cellInMeters));
+			GlobalSettings.getInstance().setLonSize(gridHandler.metersToLonDegree(pos.getLatitude(), cellInMeters));
+		}
 
 		//Check if grid exists (If a message with that bsmmsi has been received before)
 		//otherwise create a grid for corresponding base station
@@ -146,9 +152,15 @@ public class MessageHandler implements IAisHandler {
 	
 	private void calculateCoverage(CustomMessage customMessage){
 		
-		//Calculate distance since last message
-		GeoLocation oldPos = customMessage.ship.getLastMessage().message.getPos().getGeoLocation();
+		//If lastPoint and newPoint is not in same cell, we ignore the message for now
 		GeoLocation pos = customMessage.message.getPos().getGeoLocation();
+		Cell cell = customMessage.grid.getCell(pos.getLatitude(), pos.getLongitude());
+		GeoLocation oldPos = customMessage.ship.getLastMessage().message.getPos().getGeoLocation();
+		if(!customMessage.grid.getCellId(oldPos.getLatitude(), oldPos.getLongitude()).equals(cell.id)){
+			return;
+		}
+		
+		//Calculate distance since last message
 		double distance = oldPos.getRhumbLineDistance(pos);
 		
 		//Determine expected transmitting frequency
@@ -186,17 +198,7 @@ public class MessageHandler implements IAisHandler {
 		if(customMessage.ship.getLastMessage() == null) {
 			filterMessage = true;
 		}else{
-			//If lastPoint and newPoint is not in same cell, we ignore the message for now
-			GeoLocation pos = customMessage.message.getPos().getGeoLocation();
-			Cell cell = customMessage.grid.getCell(pos.getLatitude(), pos.getLongitude());
-			GeoLocation oldPos = customMessage.ship.getLastMessage().message.getPos().getGeoLocation();
-			if(!customMessage.grid.getCellId(oldPos.getLatitude(), oldPos.getLongitude()).equals(cell.id)){
-				filterMessage = true;
-//				System.out.println("New cell, lets ignore");
-			}else{
-//				System.out.println(customMessage.ship.mmsi +"\t WEEEEEH, same cell, hurrayyy");
-			}
-			
+
 			//If time since last message is > 30 minutes, we filter
 			if(customMessage.timeSinceLastMsg > 1800)
 				filterMessage = true;

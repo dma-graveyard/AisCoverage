@@ -18,9 +18,18 @@ package dk.dma.aiscoverage;
 public class GlobalSettings {
 	
 	//global settings
-	private double lonSize = 0.2;
-	private double latSize = 0.1;
+	private double lonSize = -1;
+	private double latSize = -1;
+	private double cellInMeters = 5000;
 	
+	public double getCellInMeters() {
+		return cellInMeters;
+	}
+
+	public void setCellInMeters(double cellInMeters) {
+		this.cellInMeters = cellInMeters;
+	}
+
 	//Getters and setters
 	public int getMessagesPerShipThreshold() {
 		return messagesPerShipThreshold;

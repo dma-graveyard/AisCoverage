@@ -63,6 +63,8 @@ public class AisCoverage {
 				outputFile = args[++i];
 			} else if (args[i].equals("-timeout")) {
 				timeout = Integer.parseInt(args[++i]);
+			} else if (args[i].equals("-cellsize")) {
+				GlobalSettings.getInstance().setCellInMeters(Integer.parseInt(args[++i]));
 			} else{
 				i++;
 			}
@@ -90,8 +92,7 @@ public class AisCoverage {
 		aisReader.addProprietaryFactory(new GatehouseFactory());
 
 		// set settings
-		GlobalSettings.getInstance().setLonSize(0.05);
-		GlobalSettings.getInstance().setLatSize(0.025);
+		//?
 		
 		// Make handler instance
 		MessageHandler messageHandler = new MessageHandler(timeout, aisReader);
