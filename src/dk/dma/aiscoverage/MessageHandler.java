@@ -19,6 +19,7 @@ import java.util.Date;
 import org.apache.log4j.Logger;
 
 import dk.dma.aiscoverage.calculator.AbstractCoverageCalculator;
+import dk.dma.aiscoverage.geotools.GeoConverter;
 import dk.frv.ais.country.Country;
 import dk.frv.ais.geo.GeoLocation;
 import dk.frv.ais.handler.IAisHandler;
@@ -105,8 +106,16 @@ public class MessageHandler implements IAisHandler {
 		
 		if(GlobalSettings.getInstance().getLatSize() == -1){
 			double cellInMeters= GlobalSettings.getInstance().getCellInMeters();
-			GlobalSettings.getInstance().setLatSize(gridHandler.metersToLatDegree(cellInMeters));
-			GlobalSettings.getInstance().setLonSize(gridHandler.metersToLonDegree(pos.getLatitude(), cellInMeters));
+			GlobalSettings.getInstance().setLatSize(GeoConverter.metersToLatDegree(cellInMeters));
+			GlobalSettings.getInstance().setLonSize(GeoConverter.metersToLonDegree(pos.getLatitude(), cellInMeters));
+		}
+		
+		if(pos.getLatitude() < 37){
+			System.out.println("bsmsi: " + bsMmsi);
+			System.out.println("mmsi: " + posMessage.getUserId());
+			System.out.println("lat: "+ pos.getLatitude());
+			System.out.println("lon: " + pos.getLongitude());
+			System.out.println();
 		}
 
 		// Check if grid exists (If a message with that bsmmsi has been received before)
@@ -139,7 +148,7 @@ public class MessageHandler implements IAisHandler {
 		newMessage.cell = cell;
 		newMessage.cell.NOofReceivedSignals++;
 		
-		if(newMessage.ship.getLastMessage() != null)
+		if(newMessage.ship.getMessages().peekLast() != null)
 			newMessage.timeSinceLastMsg = (newMessage.timestamp.getTime() - newMessage.ship.getLastMessage().timestamp.getTime())/1000;
 		
 		//Filter messages, based on rules of thumb

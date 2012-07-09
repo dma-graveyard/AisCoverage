@@ -15,10 +15,13 @@
  */
 package dk.dma.aiscoverage;
 
+import java.util.LinkedList;
+
 public class Ship {
 	
 	public Long mmsi;
 	private CustomMessage lastMessage = null;
+	private LinkedList<CustomMessage> messageBuffer = new LinkedList<CustomMessage>();
 
 	public Ship(Long mmsi) {
 		this.mmsi = mmsi;
@@ -29,6 +32,12 @@ public class Ship {
 	}
 	public CustomMessage getLastMessage(){
 		return lastMessage;
+	}
+	public void messageTransmitted(CustomMessage m){
+		messageBuffer.add(m);
+	}
+	public LinkedList<CustomMessage> getMessages(){
+		return messageBuffer;
 	}
 	
 

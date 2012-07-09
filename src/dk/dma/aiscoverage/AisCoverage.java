@@ -20,7 +20,8 @@ import java.io.FileNotFoundException;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 
-import dk.dma.aiscoverage.calculator.CoverageCalculatorAdvanced;
+import dk.dma.aiscoverage.calculator.CoverageCalculatorAdvanced2;
+import dk.dma.aiscoverage.calculator.CoverageCalculatorAdvanced3;
 import dk.dma.aiscoverage.calculator.CoverageCalculatorSimple;
 import dk.frv.ais.proprietary.DmaFactory;
 import dk.frv.ais.proprietary.GatehouseFactory;
@@ -95,7 +96,7 @@ public class AisCoverage {
 
 		
 		// Make handler instance
-		MessageHandler messageHandler = new MessageHandler(timeout, aisReader, new CoverageCalculatorAdvanced());
+		MessageHandler messageHandler = new MessageHandler(timeout, aisReader, new CoverageCalculatorAdvanced3());
 //		MessageHandler messageHandler = new MessageHandler(timeout, aisReader, new CoverageCalculatorSimple());
 		
 		// Register handler and start reader

@@ -15,15 +15,25 @@ public abstract class AbstractCoverageCalculator {
 	public double getTimeDifference(Long m1, Long m2){
 		return  ((double)(m2 - m1) / 1000);
 	}
-	public int getExpectedTransmittingFrequency(int sog){
+	public double getExpectedTransmittingFrequency(int sog, boolean rotating){
+		double expectedTransmittingFrequency;
 		//Determine expected transmitting frequency
-		int expectedTransmittingFrequency;
-		if(sog < 14)
-			expectedTransmittingFrequency = 10;
-		else if(sog < 23)
-			expectedTransmittingFrequency = 6;
-		else 
-			expectedTransmittingFrequency = 2;
+		if(rotating){
+			if(sog < 14)
+				expectedTransmittingFrequency = 3.33;
+			else if(sog < 23)
+				expectedTransmittingFrequency = 2;
+			else 
+				expectedTransmittingFrequency = 2;
+		}else{
+			
+			if(sog < 14)
+				expectedTransmittingFrequency = 10;
+			else if(sog < 23)
+				expectedTransmittingFrequency = 6;
+			else 
+				expectedTransmittingFrequency = 2;
+		}
 		
 		return expectedTransmittingFrequency;
 	}
