@@ -24,6 +24,7 @@ public class CoverageCalculatorAdvanced3 extends AbstractCoverageCalculator {
 	/*
 	 * This calculator maintains a buffer for each ship. Rotation is determined based on 
 	 * difference between cog in first and last message in buffer.
+	 * If rotation is ignored, missing points will only be calculated for ships that are NOT rotating.
 	 * 
 	 */
 	@Override
@@ -67,6 +68,7 @@ public class CoverageCalculatorAdvanced3 extends AbstractCoverageCalculator {
 	 * Calculates missing points between two messages and add them to corresponding cells
 	 */
 	private void calculateMissingPoints(CustomMessage m1, CustomMessage m2, boolean rotating){
+		m1.cell.NOofReceivedSignals++;
 		Long p1Time = m1.timestamp.getTime();
 		Long p2Time = m2.timestamp.getTime();
 		double p1Lat = m1.message.getPos().getGeoLocation().getLatitude();

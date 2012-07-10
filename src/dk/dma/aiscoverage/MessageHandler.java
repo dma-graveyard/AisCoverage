@@ -146,7 +146,6 @@ public class MessageHandler implements IAisHandler {
 		newMessage.grid = grid;
 		newMessage.ship = ship;
 		newMessage.cell = cell;
-		newMessage.cell.NOofReceivedSignals++;
 		
 		if(newMessage.ship.getMessages().peekLast() != null)
 			newMessage.timeSinceLastMsg = (newMessage.timestamp.getTime() - newMessage.ship.getLastMessage().timestamp.getTime())/1000;

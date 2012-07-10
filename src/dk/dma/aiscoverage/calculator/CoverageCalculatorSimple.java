@@ -8,6 +8,7 @@ public class CoverageCalculatorSimple extends AbstractCoverageCalculator{
 
 	@Override
 	public void calculateCoverage(CustomMessage customMessage) {
+		customMessage.cell.NOofReceivedSignals++;
 		//If lastPoint and newPoint is not in same cell, we ignore the message for now
 				GeoLocation pos = customMessage.message.getPos().getGeoLocation();
 				Cell cell = customMessage.grid.getCell(pos.getLatitude(), pos.getLongitude());

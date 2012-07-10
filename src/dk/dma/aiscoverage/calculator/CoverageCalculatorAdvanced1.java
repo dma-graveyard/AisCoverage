@@ -11,7 +11,7 @@ public class CoverageCalculatorAdvanced1 extends AbstractCoverageCalculator {
 	 */
 	@Override
 	public void calculateCoverage(CustomMessage m2) {
-
+		m2.cell.NOofReceivedSignals++;
 		CustomMessage m1 = m2.ship.getLastMessage();
 		Long p1Time = m1.timestamp.getTime();
 		Long p2Time = m2.timestamp.getTime();

@@ -20,7 +20,7 @@ import java.util.HashMap;
 public class Cell {
 	
 	HashMap<Long, Ship> ships = new HashMap<Long, Ship>();
-	Long NOofReceivedSignals=0L; 
+	public Long NOofReceivedSignals=0L; 
 	public Long NOofMissingSignals=0L;
 	double latitude;
 	double longitude;
